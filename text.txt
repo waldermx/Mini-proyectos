@@ -1,2 +1,16 @@
-Hello and Welcome
-This is extra text
+game()
+
+while(checkwin()==true)
+    Turno de {fieldstatus turno}
+    readline()
+    checkconstraints()
+    assignvalue()
+    render()
+    changeturno
+
+print(winner)
+if not continue:
+
+    gameover()
+if continue:
+    game.start()
