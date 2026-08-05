@@ -1,27 +1,22 @@
 ﻿
-using Board;
+using tictactoe;
 
 var renderer = new ConsoleRenderer();
 var input = new ConsoleUserInput();
-GameBoard game = new();
+GameBoard game = new(renderer, input);
 
 
 bool isGameOver = false;
 
 while (!isGameOver)
 {
-    renderer.RenderGame(game.GameFields(), game.GetTurn().ToString();
-    try
-    {
-        game.MakeMove(game.GetTurn(), input.GetNextMove());
-    }
-    catch { }
+    game.Render();
 
-    if (game.Moves > 5) game.CheckWin(game.GetTurn());
+    game.MakeMove(input.GetNextMove());
 
     if(game.Winner is not null)
     {
-        renderer.ShowMessage("Congrats player {0}, you have won.", game.Winner);
+        renderer.ShowMessage($"Congrats player {game.Winner}, you have won.");
         renderer.ShowMessage("rematch?");
 
     }

@@ -1,5 +1,5 @@
 
-
+namespace tictactoe;
 
 public interface IRenderer
 {

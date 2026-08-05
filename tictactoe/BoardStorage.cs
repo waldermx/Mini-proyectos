@@ -52,19 +52,28 @@ public class BoardStorage
         SetFieldState(winner, 10);
         SetFieldState((FieldState)1, 11);
     }
-    public bool CheckWin(FieldState player) // playerValue: 1 para X, 2 para O
+    private bool IsWinner(FieldState player)
     {
         for (int i = 0; i < WinCasesMasks.Length; i++)
         {
-            var playerMask = _playerWinMask[(int)(player)-1]; //adjust for index
+            var playerMask = _playerWinMask[(int)(player) - 1]; //adjust for index
 
             // 1. Selects winning fields 
             var evaluatedLine = IntBoard & WinCasesMasks[i];
             var playerMoves = WinCasesMasks[i] & playerMask;
-            
-            return playerMoves==evaluatedLine;
+
+            return playerMoves == evaluatedLine;
         }
 
         return false;
+    }
+    public bool CheckWin(FieldState player) // playerValue: 1 para X, 2 para O
+    {
+        if (IsWinner(player))
+        {
+            SetWin(player);
+            return true;
+        }
+        else return false;
     }
 }

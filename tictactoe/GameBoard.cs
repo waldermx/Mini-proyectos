@@ -1,13 +1,12 @@
-
-
-namespace Board;
+namespace tictactoe;
 
 
 public class GameBoard
 {
-    public GameBoard()
+    public GameBoard(IRenderer renderer)
     {
         _boardState = new();
+        _renderer = renderer;
         FieldState player = (FieldState)(Random.Shared.Next(2) + 1); //Selects between 0 and 1, then adds 1 to adjust to players
         SetTurn(player);
         Moves = 0;
@@ -18,8 +17,10 @@ public class GameBoard
     {
         _boardState.SetFieldState(turn, 9);
     }
+    private IRenderer _renderer;
+    private IUserInput _input;
     public bool IsGameOver => _boardState.GetFieldState(11) != FieldState.Null;
-
+    public string Winner => _boardState.GetFieldState(10).ToString();
     //todo Hacer más eficiente la reconstrucción del array
     public List<string> GameFields()
     {
@@ -49,19 +50,27 @@ public class GameBoard
         // Assign turn bits
         _boardState.SetFieldState(nextTurn, 9);
     }
-    public void MakeMove(FieldState player, byte position)
+    public void MakeMove(byte position)
     {
+        var player = GetTurn();
         if (_boardState.GetFieldState(position) != FieldState.Null && position < 9)
             throw new InvalidOperationException($"Token in {position} is already used."); // can't place token on an occupied field
         _boardState.SetFieldState(player, position);
 
         Moves += 1;
+        if (Moves > 6)
+        {
+            _boardState.CheckWin(player);
+        }
+    }
+    public void Render()
+    {
+        _renderer.RenderGame(GameFields(), GetTurn().ToString());
     }
 
-    public bool TryToGetWin(out FieldState winner)
-    {
-        _boardState.CheckWin()
-    }
+    
+
+
 
 
 }
