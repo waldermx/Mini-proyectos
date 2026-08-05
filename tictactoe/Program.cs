@@ -1,25 +1,23 @@
 ﻿
 using Board;
 
-
-
 var renderer = new ConsoleRenderer();
 var input = new ConsoleUserInput();
 GameBoard game = new();
 
 
-bool IsGameOver = false;
+bool isGameOver = false;
 
-while (!IsGameOver)
+while (!isGameOver)
 {
-    renderer.RenderGame(game.GameFields(), game.GetTurn().ToString());
+    renderer.RenderGame(game.GameFields(), game.GetTurn().ToString();
     try
     {
         game.MakeMove(game.GetTurn(), input.GetNextMove());
     }
     catch { }
 
-    if (game.Moves > 5) game.CheckWin();
+    if (game.Moves > 5) game.CheckWin(game.GetTurn());
 
     if(game.Winner is not null)
     {
