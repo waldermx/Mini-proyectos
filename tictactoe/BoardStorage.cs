@@ -1,4 +1,4 @@
-namespace  tictactoe;
+namespace tictactoe;
 
 public enum FieldState : byte
 {
@@ -9,71 +9,61 @@ public enum FieldState : byte
 
 public class BoardStorage
 {
-    private readonly int[] _playerWinMask = [
-        0b010101010101010101,//x
-        0b101010101010101010//o
+    private static readonly int[] WinCasesMasks =
+    [
+        // Horizontals
+        0b000000_000000_111111,
+        0b000000_111111_000000,
+        0b111111_000000_000000,
+        // Verticals
+        0b000011_000011_000011,
+        0b001100_001100_001100,
+        0b110000_110000_110000,
+        // Diagonals
+        0b110000_001100_000011,
+        0b000011_001100_110000
     ];
 
-    private int IntBoard { get; set; } = 0; 
-    public FieldState GetFieldState(byte position) =>
-    (FieldState)StripZeros(IntBoard & GetFieldMask(position), position);
-    public void SetFieldState(FieldState state, //1 para x(01), 2 para o(10)
-                        byte position)
+    private static readonly int[] PlayerWinMasks =
+    [
+        0b010101_010101_010101, // X (01)
+        0b101010_101010_101010  // O (10)
+    ];
+
+    public int IntBoard { get; private set; } = 0;
+
+    public FieldState GetFieldState(byte position)
+    {
+        int mask = GetFieldMask(position);
+        int shift = position * 2;
+        return (FieldState)((IntBoard & mask) >> shift);
+    }
+
+    public void SetFieldState(FieldState state, byte position)
     {
         IntBoard |= (int)state << (position * 2);
     }
-    public void CleanFieldState(byte position)
-    {
-        var mask = ~GetFieldMask(position);
-        IntBoard &= mask; //Clean turn bits
-    }
-    private int GetFieldMask(byte position) => 3 << (2 * position); // 11(2*position zeroes) 
-    private int StripZeros(int fieldState, byte position) =>
-        (fieldState >> (position * 2)) & 3; // the number
-    //to be only called on the constructor
-    private static readonly int[] WinCasesMasks =
-    [
-                        //lc        mc          fc    
-        //horizontal
-        0b00000000000000_00_00_00__00_00_00__11_11_11,
-        0b00000000000000_00_00_00__11_11_11__00_00_00,
-        0b00000000000000_11_11_11__00_00_00__00_00_00,
-        //vertical
-        0b00000000000000_00_00_11__00_00_11__00_00_11,
-        0b00000000000000_00_11_00__00_11_00__00_11_00,
-        0b00000000000000_11_00_00__11_00_00__11_00_00,
-        //diagonal
-        0b00000000000000_11_00_00__00_11_00__00_00_11,
-        0b00000000000000_00_00_11__00_11_00__11_00_00
-    ];
 
-    private void SetWin(FieldState winner)
+    public bool IsWinner(FieldState player)
     {
-        SetFieldState(winner, 10);
-        SetFieldState((FieldState)1, 11);
-    }
-    private bool IsWinner(FieldState player)
-    {
-        for (int i = 0; i < WinCasesMasks.Length; i++)
+        if (player == FieldState.Null) return false;
+
+        int playerMask = PlayerWinMasks[(int)player - 1];
+
+
+        foreach (int winMask in WinCasesMasks)
         {
-            var playerMask = _playerWinMask[(int)(player) - 1]; //adjust for index
+            int evaluatedLine = IntBoard & winMask;
+            int targetLine = winMask & playerMask;
 
-            // 1. Selects winning fields 
-            var evaluatedLine = IntBoard & WinCasesMasks[i];
-            var playerMoves = WinCasesMasks[i] & playerMask;
-
-            return playerMoves == evaluatedLine;
+            if (evaluatedLine == targetLine)
+            {
+                return true; // A winning line was found
+            }
         }
 
         return false;
     }
-    public bool CheckWin(FieldState player) // playerValue: 1 para X, 2 para O
-    {
-        if (IsWinner(player))
-        {
-            SetWin(player);
-            return true;
-        }
-        else return false;
-    }
+
+    private static int GetFieldMask(byte position) => 3 << (position * 2);
 }

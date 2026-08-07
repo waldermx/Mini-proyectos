@@ -1,0 +1,1 @@
+Console.WriteLine(1f / 0.0f);

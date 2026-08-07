@@ -1,32 +1,13 @@
-﻿
-using tictactoe;
+﻿using tictactoe;
 
-var renderer = new ConsoleRenderer();
-var input = new ConsoleUserInput();
-GameBoard game = new(renderer, input);
+// 1. Instantiate infrastructure adapters
+IRenderer renderer = new ConsoleRenderer();
+IUserInput input = new ConsoleUserInput();
 
+// 2. Dependency injection into the application layer
+GameController controller = new(renderer, input);
 
-bool isGameOver = false;
+// 3. Start the program
+controller.StartGameLoop();
 
-while (!isGameOver)
-{
-    game.Render();
-
-    game.MakeMove(input.GetNextMove());
-
-    if(game.Winner is not null)
-    {
-        renderer.ShowMessage($"Congrats player {game.Winner}, you have won.");
-        renderer.ShowMessage("rematch?");
-
-    }
-
-}
-
-Console.WriteLine("GoodBye");
-
-
-
-
-
-
+Console.WriteLine("Thanks for playing. Goodbye!");
